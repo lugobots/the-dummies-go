@@ -3,3 +3,6 @@ the-dummies
 /.idea/
 .lugo/my_bot_binary
 /.studio
+/.cache
+.lugo/go-cache
+.lugo/go-mod-cache

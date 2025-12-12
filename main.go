@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"net/http"
+	"time"
 
 	"github.com/lugobots/lugo4go/v3"
 
@@ -42,4 +44,19 @@ func main() {
 	if err := connectionStarter.Run(myBot); err != nil {
 		log.Fatalf("bot stopped: %s", err)
 	}
+}
+
+func InternetAvailable() bool {
+	client := http.Client{
+		Timeout: 5 * time.Second, // avoid hanging too long
+	}
+
+	resp, err := client.Get("https://www.google.com")
+	if err != nil {
+		log.Printf("err: %v\n", err)
+		return false
+	}
+	defer resp.Body.Close()
+	log.Printf("STATUS: %v\n", resp.StatusCode)
+	return resp.StatusCode == http.StatusOK
 }

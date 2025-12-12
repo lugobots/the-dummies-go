@@ -27,9 +27,10 @@ type Bot struct {
 }
 
 func (b *Bot) OnDisputing(_ context.Context, inspector lugo4go.SnapshotInspector) ([]proto.PlayerOrder, string, error) {
+	b.Logger.With("method", "OnDisputing").Info("---->>>>> PRINTED <<<<----")
 	me := inspector.GetMe()
 	ballPosition := inspector.GetBall().GetPosition()
-
+	b.Logger.With("method", "OnDisputing").Info("SSSS")
 	ballRegion, err := b.FieldMapper.GetPointRegion(ballPosition)
 	if err != nil {
 		return nil, "", errors.Wrap(err, "failed to find the ball region")
@@ -58,6 +59,7 @@ func (b *Bot) OnDisputing(_ context.Context, inspector lugo4go.SnapshotInspector
 }
 
 func (b *Bot) OnDefending(_ context.Context, inspector lugo4go.SnapshotInspector) ([]proto.PlayerOrder, string, error) {
+	b.Logger.With("method", "OnDefending").Info("---->>>>> PRINTED <<<<----")
 	me := inspector.GetMe()
 	ballPosition := inspector.GetBall().GetPosition()
 
@@ -65,6 +67,8 @@ func (b *Bot) OnDefending(_ context.Context, inspector lugo4go.SnapshotInspector
 	if err != nil {
 		return nil, "", errors.Wrapf(err, "failed to find the ball region")
 	}
+
+	b.Logger.With("asas")
 
 	myRegion, err := b.FieldMapper.GetPointRegion(me.GetPosition())
 	if err != nil {
@@ -88,6 +92,7 @@ func (b *Bot) OnDefending(_ context.Context, inspector lugo4go.SnapshotInspector
 }
 
 func (b *Bot) OnHolding(_ context.Context, inspector lugo4go.SnapshotInspector) ([]proto.PlayerOrder, string, error) {
+	b.Logger.With("method", "OnHolding").Info("---->>>>> PRINTED <<<<----")
 	me := inspector.GetMe()
 
 	goal := b.FieldMapper.GetAttackGoal()
@@ -102,9 +107,12 @@ func (b *Bot) OnHolding(_ context.Context, inspector lugo4go.SnapshotInspector) 
 		return nil, "", errors.Wrap(err, "failed to find my region")
 	}
 
+	_ = goalRegion
+	_ = myRegion
 	// if we are near to the goal, let's kick it!
 	if !isNear(myRegion, goalRegion) {
-		return []proto.PlayerOrder{inspector.MakeOrderMoveByDirection(field.Forward, specs.PlayerMaxSpeed)}, "trying to catch the ball", nil
+		return []proto.PlayerOrder{}, "trying to catch the ball", nil
+		// return []proto.PlayerOrder{inspector.MakeOrderMoveByDirection(field.Forward, specs.PlayerMaxSpeed)}, "trying to catch the ball", nil
 	}
 
 	kickOrder, err := inspector.MakeOrderKickMaxSpeed(goal.Center)
@@ -112,10 +120,12 @@ func (b *Bot) OnHolding(_ context.Context, inspector lugo4go.SnapshotInspector) 
 		return nil, "", errors.Wrap(err, "failed to create kick order")
 	}
 
-	return []proto.PlayerOrder{kickOrder}, "trying to catch the ball", nil
+	_ = kickOrder
+	return []proto.PlayerOrder{}, "trying to catch the ball", nil
 }
 
 func (b *Bot) OnSupporting(_ context.Context, inspector lugo4go.SnapshotInspector) ([]proto.PlayerOrder, string, error) {
+	b.Logger.With("method", "OnSupporting").Info("---->>>>> PRINTED <<<<----")
 	me := inspector.GetMe()
 
 	teammatePosition := inspector.GetBall().GetHolder().GetPosition()
@@ -148,6 +158,7 @@ func (b *Bot) OnSupporting(_ context.Context, inspector lugo4go.SnapshotInspecto
 }
 
 func (b *Bot) AsGoalkeeper(_ context.Context, inspector lugo4go.SnapshotInspector, myState lugo4go.PlayerState) ([]proto.PlayerOrder, string, error) {
+	b.Logger.With("method", "AsGoalkeeper").Info("---->>>>> PRINTED <<<<----")
 	if myState == lugo4go.HoldingTheBall {
 		kickOrder, err := inspector.MakeOrderKickMaxSpeed(field.FieldCenter())
 		if err != nil {
